@@ -10,8 +10,6 @@ namespace linear
 {
 	std::vector<std::vector<long double>> rref(std::vector<std::vector<long double>> matrix)
 	{
-		std::cout << "\n\nRREF Start\n\n";
-
 		bool mult_flag = false;
 		long double pivot_multiplier = 0;
 		long double other_multiplier = 0;
@@ -52,24 +50,11 @@ namespace linear
 							else
 							{
 								matrix[r][c] -= matrix[pivot_row][c] * other_multiplier;
-								std::cout << matrix[pivot_row][c] * other_multiplier << "    ";
 							}
 						}
-						std::cout << "\n\n";
 					}
 				}
 			}
-
-			for (auto& x : matrix)
-			{
-				for (auto& y : x)
-				{
-					std::cout << y << "   ";
-				}
-				std::cout << "\n";
-			}
-			std::cout << "\n\n\n";
-
 			pivot_indicator++;
 			no_pivot_flag = true;
 		}
@@ -77,66 +62,52 @@ namespace linear
 	}
 
 
-	std::vector<long double> doubleToInt(std::vector<std::vector<long double>> matrix) //this is awful code, but might just work
+	std::vector<long double> doubleToInt(std::vector<std::vector<long double>> matrix)
 	{
-		std::cout << "This is now the doubleToInt\n\n\n";
-		
-		//slap a generic on the end of the vector, use that in the case of solutions vector overflow for free compounds
-
 		long double smallest = INT_MAX;
 		std::vector<long double> solutions;
 		long double entry = 0;
 
 		for (int i = 0; i < matrix.size(); ++i)
 		{
-			entry = abs(matrix[i][matrix.size()]); //might need a - 1? Probably look into why this acts up
+			entry = abs(matrix[i][matrix.size()]); //this has acted up in the past for reasons still unknown
 			if (entry == 0)
 			{
 				entry = 1;
 			}
-			std::cout << entry << "   ";
 			solutions.push_back(entry);
 		}
 
-		solutions.push_back(1);
-
-		std::cout << "\n";
-		int x = 100;
+		solutions.push_back(1); //this fills in the gaps for any compounds not directly associated with an answer
+		int x = 100; //bumping this number up will make the program take longer to run, but will provide less decimal-dependent answers
 		int closeness_counter = 0;
 
 		while (x > 0)
 		{
 			for (int i = 0; i < solutions.size(); ++i)
 			{
-				if (solutions.at(i) != 0 && abs(solutions[i]) < smallest) //bugtest, having 1 be the smallest would make this all be pointless
+				if (solutions.at(i) != 0 && abs(solutions[i]) < smallest) //bugtest, having 1 always be the smallest would make this all be pointless
 				{
 					smallest = abs(solutions[i]);
 				}
 			}
-			std::cout << smallest << "\n";
-
 			for (int i = 0; i < solutions.size(); ++i)
 			{
 				solutions.at(i) /= smallest;
-				std::cout << solutions.at(i) << "   ";
 				if (solutions.at(i) * 1.0005 >= (int)solutions.at(i) && solutions.at(i) * 0.9995 <= (int)solutions.at(i))
 				{
 					closeness_counter++;
 				}
 			}
 
-			if (closeness_counter = matrix.size() - 1)
+			if (closeness_counter = matrix.size() - 1) //loop is terminated should all values be "close enough" to ints
 			{
 				break;
 			}
-			std::cout << "\n\n";
 			smallest = INT_MAX;
 			closeness_counter = 0;
 			x--;
 		}
-		std::cout << "\n\n";
-		for (auto x : solutions) { std::cout << x << "   "; }
-		std::cout << "\n\n";
 		return solutions;
 	}
 
@@ -165,7 +136,6 @@ namespace linear
 					if (elements.find(string_holder) == elements.end())
 					{
 						elements.insert(string_holder);
-						std::cout << string_holder << " added\n";
 						matrix_rows++;
 					}
 					string_holder = "";
@@ -183,7 +153,7 @@ namespace linear
 	}
 
 
-
+	//the basis of the program, branches into various subfunctions seen above
 	std::string stoichSolver(std::string manual_input = "")
 	{
 		std::string input;
@@ -198,23 +168,12 @@ namespace linear
 			input = manual_input;
 		}
 
+		//end of GUI stuff
 
-
-		/*
-		string = element name associated with a row
-		int = actual row index of the element
-
-		Implementation:
-		1. Use string with the map.find feature to locate the row in question on the 2D array "matrix"
-		2. Use the cols_counter (works through ++ with each new compound) to locate the correct column
-		2. matrix[map.find][cols_counter] should allow input in the correct cell
-		4. side_multiplier takes care of the -1 side logic
-		*/
 		std::map<std::string, int> elementList;
 		std::map<std::string, int> ::iterator itr;
 
 		char char_at_index;
-		std::string string_converter = "";
 		double side_multiplier = 1;
 
 		std::string string_holder = "";
@@ -222,16 +181,11 @@ namespace linear
 
 		int cols_counter = 0;
 		int rows_counter = 0;
-
 		int element_total = 0;
 
 		int i_temp;
-
-		std::vector<long double> temporary;
-
 		std::vector<std::vector<long double>> matrix = matrixInitializer(input);
 
-		//start of the loop
 		for (int i = 0; i < input.size(); ++i)
 		{
 			char_at_index = input.at(i);
@@ -245,9 +199,6 @@ namespace linear
 				else
 				{
 					string_holder += char_at_index;
-
-					std::cout << "Element found, string_holder = " << string_holder << "\n";
-
 					i_temp = i;
 					while (i_temp < input.size() - 1)
 					{
@@ -256,8 +207,6 @@ namespace linear
 							num_holder = input.at(i_temp + 1);
 							element_total += std::stoi(num_holder);
 							num_holder = "";
-
-							std::cout << "Isdigit was triggered, Element_total = " << element_total << "\n";
 							i++; //the next char is known
 						}
 						else
@@ -266,19 +215,15 @@ namespace linear
 						}
 						i_temp++;
 					}
-					if (element_total == 0) { std::cout << "Case of no numbers\n"; element_total = 1; } //case of no numbers
+					if (element_total == 0) { element_total = 1; } //case of no numbers
 
-					itr = elementList.find(string_holder);
+					itr = elementList.find(string_holder); //adding to existing map
 					if (itr != elementList.end())
 					{
-						std::cout << "Existing element = " << string_holder << "\n\n";
-
 						matrix[elementList.at(string_holder)][cols_counter] += element_total * side_multiplier; //already initialized
 					}
 					else //new string_holder, map gets new entry
 					{
-						std::cout << "Unique element = " << string_holder << "\n\n";
-
 						elementList.insert(std::pair<std::string, int>(string_holder, rows_counter));
 						matrix[elementList.at(string_holder)][cols_counter] = element_total * side_multiplier;
 						rows_counter++; //number of elements present has increased
@@ -299,7 +244,6 @@ namespace linear
 				{
 					cols_counter++;
 					side_multiplier /= abs(side_multiplier);
-					std::cout << "Side multiplier reset!\n\n";
 				}
 				else if (isdigit(char_at_index))
 				{
@@ -310,49 +254,29 @@ namespace linear
 						{
 							num_holder = input.at(i_temp);
 							element_total += std::stoi(num_holder);
-
-							std::cout << "Next digit (" << num_holder << ") num, element_total = " << element_total << "\n";
-
 							num_holder = "";
 						}
 						else
 						{
-							std::cout << "Next digit (" << input.at(i_temp) << ") not a num, element_total = " << element_total << "\n";
 							i = i_temp - 1;
 							break;
 						}
 						i_temp++;
 					}
 					side_multiplier *= element_total;
-
-					std::cout << "Side multiplier = " << side_multiplier << "\n\n";
-
 					element_total = 0;
 				}
 			}
 		}
 
-		for (auto& x : matrix)
-		{
-			for (auto& y : x)
-			{
-				std::cout << y << "   ";
-			}
-			std::cout << "\n";
-		}
-		std::cout << "\n\n\n";
-
 		std::vector<long double> solutions;
-		matrix = rref(matrix);
-		solutions = doubleToInt(matrix);
+
+		matrix = rref(matrix); //row reduces the matrix
+		solutions = doubleToInt(matrix); //interpretation of the matrix
 		bool number_placement_flag = false;
 		int solutions_counter = 0;
 
-		std::cout << "\n\n\n";
-
-		
-
-		for (int i = 0; i < input.size() - 1; ++i) //root issue, swap to column based identification with free variable consideration in doubleToInt
+		for (int i = 0; i < input.size() - 1; ++i) 
 		{	
 			if (i == 0)
 			{
@@ -397,5 +321,5 @@ namespace linear
 int main()
 {
 	std::string answer = linear::stoichSolver("PbN6 + CrMn2O8 ---> Pb3O4 + Cr2O3 + MnO2 + NO");
-	std::cout << answer;
+	std::cout << "\n\nSolution:\n\n" << answer << "\n\n";
 }
