@@ -81,13 +81,15 @@ namespace linear
 	{
 		std::cout << "This is now the doubleToInt\n\n\n";
 		
+		//slap a generic on the end of the vector, use that in the case of solutions vector overflow for free compounds
+
 		long double smallest = INT_MAX;
 		std::vector<long double> solutions;
 		long double entry = 0;
 
 		for (int i = 0; i < matrix.size(); ++i)
 		{
-			entry = abs(matrix[i][matrix.size()-1]);
+			entry = abs(matrix[i][matrix.size()]); //might need a - 1? Probably look into why this acts up
 			if (entry == 0)
 			{
 				entry = 1;
@@ -95,6 +97,9 @@ namespace linear
 			std::cout << entry << "   ";
 			solutions.push_back(entry);
 		}
+
+		solutions.push_back(1);
+
 		std::cout << "\n";
 		int x = 100;
 		int closeness_counter = 0;
@@ -103,7 +108,7 @@ namespace linear
 		{
 			for (int i = 0; i < solutions.size(); ++i)
 			{
-				if (solutions.at(i) != 0 && abs(solutions[i]) < smallest)
+				if (solutions.at(i) != 0 && abs(solutions[i]) < smallest) //bugtest, having 1 be the smallest would make this all be pointless
 				{
 					smallest = abs(solutions[i]);
 				}
@@ -129,6 +134,9 @@ namespace linear
 			closeness_counter = 0;
 			x--;
 		}
+		std::cout << "\n\n";
+		for (auto x : solutions) { std::cout << x << "   "; }
+		std::cout << "\n\n";
 		return solutions;
 	}
 
@@ -176,7 +184,7 @@ namespace linear
 
 
 
-	void stoichSolver(std::string manual_input = "")
+	std::string stoichSolver(std::string manual_input = "")
 	{
 		std::string input;
 		if (manual_input == "")
@@ -342,18 +350,29 @@ namespace linear
 
 		std::cout << "\n\n\n";
 
-		for (int i = 0; i < input.size() - 1; ++i)
-		{
+		
+
+		for (int i = 0; i < input.size() - 1; ++i) //root issue, swap to column based identification with free variable consideration in doubleToInt
+		{	
 			if (i == 0)
 			{
 				input = std::to_string(solutions.at(solutions_counter)) + input;
 				solutions_counter++;
 			}
+
+			
 			
 			if (isalpha(input.at(i + 1)) && number_placement_flag)
 			{
-				
-				input = input.substr(0, i) + " " + std::to_string(solutions.at(solutions_counter)) + input.substr(i + 1, input.size());
+				if (solutions_counter >= solutions.size() - 1) //out of pivot variables, onto the free ones
+				{
+					input = input.substr(0, i) + " " + std::to_string(solutions.at(solutions.size() - 1)) + input.substr(i + 1);
+				}
+				else if (solutions.at(solutions_counter) != 1)
+				{
+					input = input.substr(0, i) + " " + std::to_string(solutions.at(solutions_counter)) + input.substr(i + 1); 
+				}
+				number_placement_flag = false;
 				solutions_counter++;
 			}
 			else if (input.at(i + 1) == '+' || input.at(i + 1) == ' ')
@@ -365,8 +384,7 @@ namespace linear
 				number_placement_flag = false;
 			}
 		}
-
-		std::cout << input;
+		return input;
 	}
 }
 
@@ -378,59 +396,6 @@ namespace linear
 
 int main()
 {
-	linear::stoichSolver("B2S3 + H2O ---> H3BO3 + H2S");
-	//linear::rref(matrix, true);
-	//std::vector<std::vector<double>> answer = linear::matrixInitializer("H2 + SO4 --> H2SO4");
-
+	std::string answer = linear::stoichSolver("PbN6 + CrMn2O8 ---> Pb3O4 + Cr2O3 + MnO2 + NO");
+	std::cout << answer;
 }
-
-//works questionably well
-/*
-int leading_row = 0;
-		while (leading_row < matrix.size())
-		{
-			for (int r = 0; r < matrix.size(); ++r)
-			{
-
-				if (matrix[leading_row][pivot_indicator] == 0) //case of a free variable throwing off the balance, pivot not present
-				{
-					pivot_indicator--;
-					break;
-				}
-				if (matrix[r][pivot_indicator] == 0)
-				{
-					//have a condition here for this erroneous situation
-				}
-
-				pivot_multiplier = 1/matrix[leading_row][pivot_indicator];
-				other_multiplier = matrix[r][pivot_indicator] / matrix[leading_row][pivot_indicator];
-
-				for (int c = 0; c < matrix[0].size(); ++c)
-				{
-					if (r == leading_row)
-					{
-						matrix[r][c] *= pivot_multiplier;
-					}
-					else
-					{
-						matrix[r][c] -= matrix[leading_row][c] * other_multiplier;
-					}
-				}
-			}
-
-			for (auto& x : matrix)
-			{
-				for (auto& y : x)
-				{
-					std::cout << y << "   ";
-				}
-				std::cout << "\n";
-			}
-			std::cout << "\n\n\n";
-
-			leading_row++;
-			pivot_indicator++;
-		}
-		return matrix;
-	}
-*/
