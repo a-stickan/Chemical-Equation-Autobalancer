@@ -2,7 +2,7 @@
 
 - Greatly simplifies the process of balancing chemical formulas through the use of C++ and linear algebra
 - A console GUI provided on the latest release, making running the program **simple** and **easy** for beginners
-- For more advanced users, the program provides has a great variety of functions in the "linear" namespace that can be used to easily enhance any chemistry-based project or repo
+- For more advanced users, the single header library ("Balancer.h") has a great variety of functions in the "linear" namespace that can be used to easily enhance any chemistry-based project or repo
 
 ## How it works (GUI)
 
