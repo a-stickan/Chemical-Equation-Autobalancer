@@ -3,7 +3,6 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <ctype.h>
 #include <list>
 
 namespace linear
@@ -70,11 +69,14 @@ namespace linear
 
 		for (int i = 0; i < matrix.size(); ++i)
 		{
-			entry = abs(matrix[i][matrix.size()]); //this has acted up in the past for reasons still unknown
+			
+			entry = abs(matrix[i][matrix[0].size() - 1]); //this has acted up in the past for reasons still unknown
+				
 			if (entry == 0)
 			{
 				entry = 1;
 			}
+
 			solutions.push_back(entry);
 		}
 
@@ -159,9 +161,11 @@ namespace linear
 		std::string input;
 		if (manual_input == "")
 		{
-			std::cout << "Please enter your chemical equation in the following format.\n1. Reactants first, products last\n2. Do NOT include charges for anions/cations!\n3. Put an addition sign \"+\" between seperate reactants/products\n3. Make an arrow of any size with \"-\" and \">\" between the reactants and products 2H2 + O2 ---> 2H2O\n\n";
-			std::cout << "Example:\n\t\t2H2 + O2 --> 2H2O\n\n\n";
-			std::cin >> input;
+			std::cout << "Please enter your chemical equation in the following format.\n1. Reactants first, products last\n2. Do NOT include charges for anions/cations!\n";
+			std::cout << "3. Put an addition sign \"+\" between seperate reactants/products\n4. Make an arrow of any size with \"-\" and \">\" between the reactants and products 2H2 + O2 ---> 2H2O\n";
+			std::cout << "5. Do NOT include parentheses in your answer! Write Mg(OH)2 like MgO2H2 instead.\n\n";
+			std::cout << "Example:\n\t\tH2 + O2 --> H2O\n\n\n";
+			std::getline(std::cin, input);
 		}
 		else
 		{
@@ -320,6 +324,6 @@ namespace linear
 
 int main()
 {
-	std::string answer = linear::stoichSolver("PbN6 + CrMn2O8 ---> Pb3O4 + Cr2O3 + MnO2 + NO");
+	std::string answer = linear::stoichSolver();
 	std::cout << "\n\nSolution:\n\n" << answer << "\n\n";
 }
