@@ -18,7 +18,7 @@
 
 - std::vector<std::vector<long double>> rref(std::vector<std::vector<long double>> matrix)
 
-Converts any inputted 2D square vector matrix into its reduced row echelon form which is then returned. 
+Converts any inputted 2D square vector matrix into its reduced row echelon form which is then returned (the result technically isn't in true RREF, moving the pivot rows into the correct diagonal formation would cause some issues with the later calculations).
 
 - std::vector<long double> doubleToInt(std::vector<std::vector<long double>> matrix)
 
